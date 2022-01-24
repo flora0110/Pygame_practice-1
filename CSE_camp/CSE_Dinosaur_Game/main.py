@@ -44,7 +44,6 @@ class Player(pygame.sprite.Sprite):
         self.jumpMove = 0
 
     def move(self):
-
         if self.jumpState == 1:
             self.jumpMove = self.jumpSpeed
             self.jumpSpeed += 0.25
