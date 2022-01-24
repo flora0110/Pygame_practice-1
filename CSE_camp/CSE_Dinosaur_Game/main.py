@@ -4,6 +4,7 @@ import random
 import time
 
 
+
 # pygame初始化
 pygame.init()
 
@@ -15,16 +16,23 @@ screen = pygame.display.set_mode((width, height))    # 設置視窗大小
 
 # 設置圖像的幀數率
 FPS = 100
+FPS2 = 50
 
 # stone and background move speed
 speed = -3
+
+
+# 設置字體和文字
+font_big = pygame.font.SysFont("Californian FB",60)
+font_small = pygame.font.SysFont("華康兒風體W4",20)
+game_over = font_big.render("Game Over",True,"#000000")
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.img = pygame.image.load("conlon.png")
-        #self.surf = pygame.Surface((36, 80))
+        self.surf = pygame.Surface((36, 80))
         self.rect = self.img.get_rect(center=(190, 460))
         print(self.rect.top)
         print(self.rect.bottom)
@@ -67,6 +75,7 @@ class Stone(pygame.sprite.Sprite):
 
 
     def move(self):
+
         global others_speed
         self.rect.move_ip((speed, 0))
         print("stone")
@@ -120,15 +129,19 @@ def main():
 
     CLOCK = pygame.time.Clock()
 
+    # 分數
+    SCORE = 0
+
     # 顯示
     while True:
+        SCORE+=0.1
         # 背景渲染
         screen.blit(background.background_0, background.rect_0)
         screen.blit(background.background_1, background.rect_1)
         # 背景移動
         background.move()
-
-
+        scores = font_small.render(str(int(SCORE)),True,"#000000")
+        screen.blit(scores, (50, 50))
 
         # 精靈
         for sprite in all_sprites:
@@ -151,6 +164,8 @@ def main():
                 pygame.quit()  # 退出pygame
                 sys.exit()  # 退出系統
 
+
+
         pygame.display.update()  # 更新繪圖視窗的內容
 
         # 碰撞偵測
@@ -158,13 +173,16 @@ def main():
             print("collide")
             pygame.mixer.Sound("collision.wav").play()
             print("sleep")
-            time.sleep(2)
+            time.sleep(1)
             print("sleep over")
-            # screen.fill("#ff0000")
-            # screen.blit(game_over, (80, 150))
 
-            # pygame.display.update()
-            # time.sleep(5)
+            screen.fill("#ff0000")
+            screen.blit(game_over, (400, 150))
+            scores_end = font_big.render("SCORE: "+str(int(SCORE)), True, "#000000")
+            screen.blit(scores_end, (400, 250))
+
+            pygame.display.update()
+            time.sleep(5)
 
             pygame.quit()
             sys.exit()
