@@ -24,13 +24,19 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.img = pygame.image.load("conlon.png")
-        self.surf = pygame.Surface((36, 80))
-        self.rect = self.surf.get_rect(center=(190, 460))
+        #self.surf = pygame.Surface((36, 80))
+        self.rect = self.img.get_rect(center=(190, 460))
+        print(self.rect.top)
+        print(self.rect.bottom)
+        print(self.rect.left)
+        print(self.rect.right)
+
         self.jumpState = 0
         self.jumpSpeed = 0
         self.jumpMove = 0
 
     def move(self):
+
         if self.jumpState == 1:
             self.jumpMove = self.jumpSpeed
             self.jumpSpeed += 0.25
@@ -38,23 +44,37 @@ class Player(pygame.sprite.Sprite):
             if self.jumpSpeed >= 10:
                 self.jumpState = 0
             self.rect.move_ip((0, self.jumpMove))
+
         else:
             pressed_keys = pygame.key.get_pressed()
             if pressed_keys[pygame.K_SPACE]:
                 self.jumpState = 1
                 self.jumpSpeed = -10
-
+        print("palyer")
+        print(self.rect.top)
+        print(self.rect.bottom)
+        print(self.rect.left)
+        print(self.rect.right)
+        print("playerrrrr")
 
 class Stone(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.img = pygame.image.load("stone.png")
-        self.surf = pygame.Surface((60, 35))
-        self.rect = self.surf.get_rect(center=(1220, 470))
+        #self.surf = pygame.Surface((60, 35))
+
+        self.rect = self.img.get_rect(center=(1220, 470))
+
 
     def move(self):
         global others_speed
         self.rect.move_ip((speed, 0))
+        print("stone")
+        print(self.rect.top)
+        print(self.rect.bottom)
+        print(self.rect.left)
+        print(self.rect.right)
+        print("stonesssssssssssss")
         if self.rect.x <= -82:
             self.rect.x = 1220 + random.randint(0, 200)
 
@@ -85,6 +105,7 @@ player = Player()
 stone = Stone()
 background = Background()
 
+
 # 定義 stone 精靈組
 stones = pygame.sprite.Group()
 stones.add(stone)
@@ -101,33 +122,29 @@ def main():
 
     # 顯示
     while True:
-        # background blit
+        # 背景渲染
         screen.blit(background.background_0, background.rect_0)
         screen.blit(background.background_1, background.rect_1)
-        # background blit
+        # 背景移動
         background.move()
 
-        # others object blit
+
+
+        # 精靈
         for sprite in all_sprites:
+            # 精靈移動
+            sprite.move()
+            # 精靈渲染
             screen.blit(sprite.img, sprite.rect)
 
-        # collision detect, and game over display
-        if pygame.sprite.spritecollideany(player, stones):
-            pygame.mixer.Sound("collision.wav").play()
-            time.sleep(1)
+            pygame.draw.line(screen, (255, 0, 0), (sprite.rect.right, sprite.rect.top), (sprite.rect.right, sprite.rect.bottom))
+            pygame.draw.line(screen, (0, 0, 255), (sprite.rect.left, sprite.rect.top),
+                             (sprite.rect.left, sprite.rect.bottom))
+            pygame.draw.line(screen, (0, 255, 0), (sprite.rect.right, sprite.rect.top),
+                             (sprite.rect.left, sprite.rect.top))
+            pygame.draw.line(screen, (0, 255, 0), (sprite.rect.right, sprite.rect.bottom),
+                             (sprite.rect.left, sprite.rect.bottom))
 
-            screen.fill("#ff0000")
-            #screen.blit(game_over, (80, 150))
-
-            pygame.display.update()
-            time.sleep(2)
-
-            pygame.quit()
-            sys.exit()
-
-        # others object move
-        for sprite in all_sprites:
-            sprite.move()
 
         for event in pygame.event.get():  # 從事件佇列中獲取事件
             if event.type == pygame.QUIT:  # 若事件為"退出"
@@ -135,6 +152,25 @@ def main():
                 sys.exit()  # 退出系統
 
         pygame.display.update()  # 更新繪圖視窗的內容
+
+        # 碰撞偵測
+        if pygame.sprite.spritecollide(player, stones, False):
+            print("collide")
+            pygame.mixer.Sound("collision.wav").play()
+            print("sleep")
+            time.sleep(2)
+            print("sleep over")
+            # screen.fill("#ff0000")
+            # screen.blit(game_over, (80, 150))
+
+            # pygame.display.update()
+            # time.sleep(5)
+
+            pygame.quit()
+            sys.exit()
+
+
+
         CLOCK.tick(FPS)  # 依照指定速率CLOCK刷新畫面，若來沒到時間就不刷新
 
 
