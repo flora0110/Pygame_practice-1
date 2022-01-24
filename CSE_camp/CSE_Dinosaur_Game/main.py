@@ -2,6 +2,7 @@ import pygame  # 導入pygame庫
 import sys  # 導入sys庫
 import random
 import time
+import math
 
 
 
@@ -16,24 +17,23 @@ screen = pygame.display.set_mode((width, height))    # 設置視窗大小
 
 # 設置圖像的幀數率
 FPS = 100
-FPS2 = 50
 
-# stone and background move speed
-speed = -3
+# 石頭和背景的移動速度
+speed = -2
 
 
 # 設置字體和文字
-font_big = pygame.font.SysFont("Californian FB",60)
-font_small = pygame.font.SysFont("華康兒風體W4",20)
-game_over = font_big.render("Game Over",True,"#000000")
+font_big = pygame.font.SysFont("Californian FB", 60)
+font_small = pygame.font.SysFont("華康兒風體W4", 40)
+game_over = font_big.render("Game Over", True, "#000000")
 
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.img = pygame.image.load("conlon.png")
-        self.surf = pygame.Surface((36, 80))
-        self.rect = self.img.get_rect(center=(190, 460))
+        self.surf = pygame.Surface((50, 70))
+        self.rect = self.surf.get_rect(center=(190, 445))
         print(self.rect.top)
         print(self.rect.bottom)
         print(self.rect.left)
@@ -64,6 +64,7 @@ class Player(pygame.sprite.Sprite):
         print(self.rect.left)
         print(self.rect.right)
         print("playerrrrr")
+
 
 class Stone(pygame.sprite.Sprite):
     def __init__(self):
@@ -124,8 +125,10 @@ all_sprites = pygame.sprite.Group()
 all_sprites.add(player)
 all_sprites.add(stone)
 
+
 # 主程式
 def main():
+    global speed
 
     CLOCK = pygame.time.Clock()
 
@@ -134,13 +137,17 @@ def main():
 
     # 顯示
     while True:
-        SCORE+=0.1
+        # 增加分數
+        SCORE += 0.1
+        # 增加速度
+        speed = -2 - 0.5 * math.log2(SCORE)
+
         # 背景渲染
         screen.blit(background.background_0, background.rect_0)
         screen.blit(background.background_1, background.rect_1)
         # 背景移動
         background.move()
-        scores = font_small.render(str(int(SCORE)),True,"#000000")
+        scores = font_small.render(f"score: {str(int(SCORE))}", True, "#000000")
         screen.blit(scores, (50, 50))
 
         # 精靈
@@ -164,8 +171,6 @@ def main():
                 pygame.quit()  # 退出pygame
                 sys.exit()  # 退出系統
 
-
-
         pygame.display.update()  # 更新繪圖視窗的內容
 
         # 碰撞偵測
@@ -177,9 +182,9 @@ def main():
             print("sleep over")
 
             screen.fill("#ff0000")
-            screen.blit(game_over, (400, 150))
+            screen.blit(game_over, (450, 150))
             scores_end = font_big.render("SCORE: "+str(int(SCORE)), True, "#000000")
-            screen.blit(scores_end, (400, 250))
+            screen.blit(scores_end, (450, 250))
 
             pygame.display.update()
             time.sleep(5)
@@ -187,9 +192,8 @@ def main():
             pygame.quit()
             sys.exit()
 
-
-
         CLOCK.tick(FPS)  # 依照指定速率CLOCK刷新畫面，若來沒到時間就不刷新
+
 
 
 if __name__ == '__main__':
